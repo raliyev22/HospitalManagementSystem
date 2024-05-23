@@ -14,7 +14,7 @@ public class MySQLExample {
     	try {
     		System.out.println("xello");
     	    Class.forName("com.mysql.cj.jdbc.Driver");
-    	    Connection connection = DriverManager.getConnection(url,"root","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");
+    	    Connection connection = DriverManager.getConnection(url,"root","yourpassword");
     	    Statement statement = connection.createStatement();
     	    
     	    ResultSet resultSet = statement.executeQuery("select * from doctor");

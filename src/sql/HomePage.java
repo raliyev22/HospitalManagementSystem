@@ -22,6 +22,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import objects.Patient;
+
 
 
 
@@ -40,12 +42,14 @@ public class HomePage extends JFrame implements ActionListener,MouseListener{
 	JButton profile;
 	
 	Color backgroundColor;
+	
+	Patient patient;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					HomePage frame = new HomePage();
+					HomePage frame = new HomePage(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -55,7 +59,9 @@ public class HomePage extends JFrame implements ActionListener,MouseListener{
 	}
 	
 	
-	public HomePage() {
+	public HomePage(Patient patient) {
+		this.patient=patient;
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(500,500);
 		setLayout(new BorderLayout());
@@ -178,6 +184,9 @@ public class HomePage extends JFrame implements ActionListener,MouseListener{
 		button.setFont(new Font("Century Gothic",Font.BOLD, 50));
 		panel.add(button);
 	}
+	
+	
+
 
 }
 

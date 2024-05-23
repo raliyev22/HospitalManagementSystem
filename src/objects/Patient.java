@@ -7,9 +7,10 @@ public class Patient {
 	private int age;
 	private String surname;
 	private String password;
+	private String email;
 	
 	
-	public Patient(int id, String gender, String name, int age, String surname, String password) {
+	public Patient(int id, String gender, String name, int age, String surname, String password,String email) {
 		super();
 		this.id = id;
 		this.gender = gender;
@@ -17,6 +18,7 @@ public class Patient {
 		this.age = age;
 		this.surname = surname;
 		this.password = password;
+		this.email = email;
 	}
 
 
@@ -48,6 +50,13 @@ public class Patient {
 	public String getPassword() {
 		return password;
 	}
+
+
+	public String getEmail() {
+		return email;
+	}
+	
+	
 	
 	
 	

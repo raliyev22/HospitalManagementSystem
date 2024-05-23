@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -33,10 +34,13 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -51,7 +55,7 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	JPanel main;
 	JPanel bottom;
 	
-	JPanel top;
+	JLabel topLabel;
 	JPanel down;
 	
 	JLabel topText;
@@ -80,14 +84,33 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	JLabel doctor4Name;
 	JLabel doctor5Name;
 	
-//	ArrayList<Doctor> doctorList;
+	JButton button1;
+	JButton button2;
+	JButton button3;
+	JButton button4;
+	JButton button5;
+	JButton apply;
+	
 	HashMap<JLabel,Doctor> panelMap;
 	ArrayList<JLabel> doctorLabels;
-	ArrayList<JButton> buttonList;
-//	ArrayList<String> surname;
+	ArrayList<String> path;
+	ArrayList<Doctor> search;
 	String url;
 	
 	Font font;
+	
+	JComboBox<String> departmentComboBox;
+	JLabel selectNameLabel;
+	JTextField selectName;
+	
+	
+	JPanel down1panel;
+	JPanel down2panel;
+	JPanel down3panel;
+	
+	JPanel bottomPanel;
+	
+	
 
 
 	public static void main(String[] args) {
@@ -105,72 +128,127 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	
 	
 	public Appointment() {
-//		dname =new ArrayList<String>();
-//		surname = new ArrayList<String>();
+		path = new ArrayList<String>();
+		path.add("d1.jpg");
+		path.add("d2.jpg");
+		path.add("d3.jpg");
+		path.add("d4.jpg");
+		path.add("d5.jpg");
+		
+		
 		doctorLabels = new ArrayList<JLabel>();
-		buttonList = new ArrayList<JButton>();
+		search =new ArrayList<Doctor>();
+		
 		
 		panelMap = new HashMap<JLabel,Doctor>();
 		url = "jdbc:mysql://localhost:3306/hospital";
-		
-		
-		
+
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(500,500);
-		
-//		setLayout(new BorderLayout());
+		font = new Font("Objektiv Mk1",Font.BOLD, 40); 
+
 		
 		bottom = new JPanel();
-		top = new JPanel();
-		down = new JPanel();
+
 		
-		topPanel=new JPanel();
-		topPanel.setPreferredSize(new Dimension(200,200));
+		topPanel= new JPanel();
+		//topPanel.setPreferredSize(new Dimension(200,200));
+		topPanel.setLayout(new GridLayout(2,1,0,0));
+		topPanel.setBorder(new EmptyBorder(0,0,20,0));
 		//topPanel.setBackground(Color.decode("#00008B"));
 		
-		topPanel.setLayout(new GridLayout(2,1,0,0));
 		
-		topPanel.add(top);
-		topPanel.add(down);
+		topLabel=new JLabel("Select a Doctor");
+		topLabel.setFont(font);
+		topLabel.setOpaque(true);
+		topLabel.setBackground(Color.decode("#00008B"));
+		topLabel.setForeground(Color.white);
+		topLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		topLabel.setVerticalAlignment(SwingConstants.CENTER);
 		
-		top.setBackground(Color.decode("#00008B"));
-		down.setBackground(Color.white);
+		topPanel.add(topLabel);
 		
-		topText = new JLabel("Select a Doctor");
-		font = new Font("Objektiv Mk1",Font.BOLD, 40); 
-		topText.setFont(font);
-		topText.setForeground(Color.decode("#A9A9A9"));
-		topText.setBorder(new EmptyBorder(20, 0, 0, 0));  
-		down.add(topText);
+		bottomPanel = new JPanel();
+		bottomPanel.setBackground(Color.decode("#00008B"));
+		bottomPanel.setLayout(new GridBagLayout());
 		
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        // Add a JComboBox
+        gbc.insets = new Insets(5, 5, 5, 50);
+        String[] department = {"None","Cardiology", "Neurology","Orthopedics","Pediatrics","Dermatology"};
+        departmentComboBox = new JComboBox<>(department);
+        bottomPanel.add(departmentComboBox, gbc);
+
+        // Add JLabel and JTextField pair
+        gbc.insets = new Insets(5, 200, 5, 5);
+        gbc.gridx++;
+        selectNameLabel = new JLabel("Name");
+        selectNameLabel.setFont(new Font("Objektiv Mk1",Font.BOLD, 20) );
+        //selectNameLabel.setOpaque(true);
+        selectNameLabel.setForeground(Color.white);
+        bottomPanel.add(selectNameLabel, gbc);
+
+        gbc.gridx++;
+        gbc.insets = new Insets(5, 20, 5, 50);
+        selectName = new JTextField(10);
+        bottomPanel.add(selectName, gbc);
+
+        gbc.gridx ++;
+        gbc.insets = new Insets(5, 200, 5, 5);
+        //gbc.gridy++;
+        //gbc.gridwidth = 3; // Span across three columns
+        apply = new JButton("Apply");
+        bottomPanel.add(apply, gbc);
+        
+        apply.setFont(new Font("Objektiv Mk1", Font.BOLD, 20));
+	    apply.setBackground(Color.white);
+	    apply.setForeground(Color.decode("#00008B"));
+	    apply.setFocusPainted(false);
+	    apply.addActionListener(this);
+		
+
+		
+		topPanel.add(bottomPanel);
+		
+
 
 		bottom.setLayout(new GridLayout(5,1,20,20));
 
-		doctor1 = new JLabel();
-		this.createFields(doctor1);
+//		doctor1 = new JLabel();
+//		this.createFields(doctor1);
+//		
+//		
+//		doctor2 = new JLabel();
+//		this.createFields(doctor2);
+//		
+//		doctor3 = new JLabel();
+//		this.createFields(doctor3);
+//		
+//		
+//		doctor4 = new JLabel();
+//		this.createFields(doctor4);
+//		
+//		
+//		doctor5 = new JLabel();
+//		this.createFields(doctor5);
+//		
+//		
+//		doctorLabels.add(doctor1);
+//		doctorLabels.add(doctor2);
+//		doctorLabels.add(doctor3);
+//		doctorLabels.add(doctor4);
+//		doctorLabels.add(doctor5);
 		
-		
-		doctor2 = new JLabel();
-		this.createFields(doctor2);
-		
-		doctor3 = new JLabel();
-		this.createFields(doctor3);
-		
-		
-		doctor4 = new JLabel();
-		this.createFields(doctor4);
-		
-		
-		doctor5 = new JLabel();
-		this.createFields(doctor5);
-		
-		
-		doctorLabels.add(doctor1);
-		doctorLabels.add(doctor2);
-		doctorLabels.add(doctor3);
-		doctorLabels.add(doctor4);
-		doctorLabels.add(doctor5);
+		for(int i=0;i<getNumberOfRows();i++) {
+			JLabel doctor = new JLabel();
+			createFields(doctor);
+			doctorLabels.add(doctor);
+		}
 		
 		createHashMapList();
 		displayInfo();
@@ -187,18 +265,12 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		
 		JScrollPane scrollPane = new JScrollPane(main);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        // Add the JScrollPane to the frame
         add(scrollPane, BorderLayout.CENTER);
         
         
-        
-        
-        
-        
-        
-        
+
         
         
     
@@ -238,6 +310,70 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		for (Doctor doc : panelMap.values()) {
+			if(e.getSource()==doc.getButton()) {
+				System.out.println(doc.getId());
+			}
+		}
+		
+		if(e.getSource()==apply) {
+			if(departmentComboBox.getSelectedItem().equals("None") && selectName.getText().isEmpty()) {
+				 JOptionPane.showMessageDialog(this, "Please enter information", "Error", JOptionPane.ERROR_MESSAGE);
+				
+			}
+			
+//			else if(!departmentComboBox.getSelectedItem().equals("None") && selectName.getText().isEmpty()) {
+			else {
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+		    	    Connection connection = DriverManager.getConnection(url,"root","password");
+		    	    
+		    	    String sql;
+		    	    PreparedStatement statement;
+		    	    if(!departmentComboBox.getSelectedItem().equals("None") && selectName.getText().isEmpty()) {
+			    	    sql = "select * from doctor where department_name = ?";
+			    	    statement = connection.prepareStatement(sql);
+			    	    statement.setString(1, (String)departmentComboBox.getSelectedItem());
+		    	    }
+		    	    
+		    	    else if(departmentComboBox.getSelectedItem().equals("None") && !selectName.getText().isEmpty()) {
+		    	    	sql = "select * from doctor where d_name = ?";
+			    	    statement = connection.prepareStatement(sql);
+			    	    statement.setString(1, (String)selectName.getText());
+		    	    }
+		    	    
+		    	    else {
+		    	    	sql = "select * from doctor where d_name = ? and department_name = ?";
+			    	    statement = connection.prepareStatement(sql);
+			    	    statement.setString(1, (String)selectName.getText());
+			    	    statement.setString(2, (String)departmentComboBox.getSelectedItem());
+		    	    }
+	
+
+		    	    
+		    	    ResultSet resultSet = statement.executeQuery();
+		    	    
+		    	    if (!resultSet.next()) {
+		    	        JOptionPane.showMessageDialog(this, "No match found", "Error", JOptionPane.ERROR_MESSAGE);
+		    	    } else {
+		    	        do {
+		    	            search.add(new Doctor(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5), new JButton(), ""));
+		    	            System.out.println("selected");
+		    	        } while (resultSet.next());
+		    	    }
+		    	    
+		    	    
+		    	    connection.close();
+				}
+				
+				catch(Exception error) {
+					System.out.println(error);
+				}
+				
+			}
+				
+			
+		}
 		
 	}
 	
@@ -280,19 +416,16 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		
 		try {
     	    Class.forName("com.mysql.cj.jdbc.Driver");
-    	    Connection connection = DriverManager.getConnection(url,"root","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");
+    	    Connection connection = DriverManager.getConnection(url,"root","password");
     	    Statement statement = connection.createStatement();
     	    
     	    ResultSet resultSet = statement.executeQuery("select * from doctor");
     	    
     	    int myindex = 0;
     	    while(resultSet.next()) {
-//    	    	dname.add(resultSet.getString(1));
-//    	    	doctorList.add(new Doctor(resultSet.getInt(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getInt(5)));
-    	    	panelMap.put(doctorLabels.get(myindex), new Doctor(resultSet.getInt(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getInt(5)));
+    	    	panelMap.put(doctorLabels.get(myindex), new Doctor(resultSet.getInt(1),resultSet.getString(2),resultSet.getString(3),resultSet.getString(4),resultSet.getInt(5),new JButton(),path.get(myindex)));
     	    	myindex+=1;
     	    }
-    	    
     	    connection.close();
     		}
     		catch(Exception e) {
@@ -306,7 +439,7 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		doctor.setHorizontalAlignment(SwingConstants.CENTER);
         doctor.setVerticalAlignment(SwingConstants.CENTER);
 		doctor.setFont(font);
-		doctor.setForeground(Color.decode("#A9A9A9"));
+		doctor.setForeground(Color.white);
 		this.populateField(doctor,content);
 	}
 	
@@ -314,15 +447,12 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		doctor.setPreferredSize(new Dimension(getWidth(),400));
 		this.populateField(doctor,component);
 		doctor.setBackground(Color.white);
-		
-		BufferedImage originalImage = loadImage("C:\\Users\\HP\\Desktop\\doctors\\"+picture);
+		BufferedImage originalImage = loadImage("C:\\Users\\HP\\eclipse-workspace\\Hospital\\"+picture);
 
-        // Add a listener to resize the icon when the label's size changes
 		doctor.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 if (originalImage != null) {
-                    // Resize the image to fit the label
                     Image resizedImage = getScaledImage(originalImage, doctor.getWidth(), doctor.getHeight());
                     doctor.setIcon(new ImageIcon(resizedImage));
                     
@@ -332,21 +462,14 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	}
 	
 	public void displayInfo() {;
-		
-		int myindex = 1;
 		 for (Entry<JLabel, Doctor> entry : panelMap.entrySet()) {
 			 setFields(new JLabel("Name: "+entry.getValue().getName()),entry.getKey());
 			 setFields(new JLabel("Surname: "+entry.getValue().getSurname()),entry.getKey());
-			 displayPicture(new JLabel(),entry.getKey(),"d"+Integer.toString(myindex)+".jpg");
+			 displayPicture(new JLabel(),entry.getKey(),entry.getValue().getPicture());
 			 setFields(new JLabel("Age: "+entry.getValue().getAge()),entry.getKey());
 			 setFields(new JLabel("Department: "+entry.getValue().getDepartmentName()),entry.getKey());
-			 JButton button = new JButton();
-		     addButton(button, entry.getKey(),new JLabel());
-			 myindex+=1;
-			 
-			 
-			
-			 
+		     addButton(entry.getValue().getButton(), entry.getKey(),new JLabel());
+
 	        }
 		
 	}
@@ -359,6 +482,9 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	    button.setForeground(Color.decode("#00008B"));
 	    button.setPreferredSize(new Dimension(150,50));
 	    button.setFocusPainted(false);
+	    button.addActionListener(this);
+	    
+	 
 
 	    inside.setLayout(new GridBagLayout());
 
@@ -366,11 +492,36 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	    gbc.gridx = 10; 
 	    gbc.gridy = 4; 
 	    
-	    buttonList.add(button);
+	
 
 	    inside.add(button, gbc);
 	    
 	    label.add(inside);
 	}
+	
+	
+	public Integer getNumberOfRows() {
+    	
+    	try {
+    	    Class.forName("com.mysql.cj.jdbc.Driver");
+    	    Connection connection = DriverManager.getConnection(url,"root","password");
+    	    Statement statement = connection.createStatement();
+    	    
+    	    
+    	    ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM doctor");
+            
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+            
+    	    connection.close();
+    	    
+    		}
+    		catch(Exception e) {
+    			System.out.println(e);
+    		}
+		return null;
+    }
 
 }
+
