@@ -177,7 +177,7 @@ public class LogIn extends JFrame implements ActionListener, MouseListener {
 
 	            try {
 	                Class.forName("com.mysql.cj.jdbc.Driver");
-	                Connection connection = DriverManager.getConnection(url, "root", "password"); 
+	                Connection connection = DriverManager.getConnection(url, "root", "yourpassword"); 
 	                Statement statement = connection.createStatement();
 	
 	                ResultSet resultSet = statement.executeQuery("select * from patient");
