@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import objects.DatabaseConnection;
+
 public class MySQLExample {
     // JDBC URL, username, and password
 	
@@ -14,7 +16,7 @@ public class MySQLExample {
     	try {
     		System.out.println("xello");
     	    Class.forName("com.mysql.cj.jdbc.Driver");
-    	    Connection connection = DriverManager.getConnection(url,"root","yourpassword");
+    	    Connection connection = DatabaseConnection.getConnection();
     	    Statement statement = connection.createStatement();
     	    
     	    ResultSet resultSet = statement.executeQuery("select * from doctor");

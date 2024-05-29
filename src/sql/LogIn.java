@@ -28,6 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import objects.DatabaseConnection;
 import objects.Patient;
 
 public class LogIn extends JFrame implements ActionListener, MouseListener {
@@ -177,7 +178,7 @@ public class LogIn extends JFrame implements ActionListener, MouseListener {
 
 	            try {
 	                Class.forName("com.mysql.cj.jdbc.Driver");
-	                Connection connection = DriverManager.getConnection(url, "root", "yourpassword"); 
+	                Connection connection = DatabaseConnection.getConnection();
 	                Statement statement = connection.createStatement();
 	
 	                ResultSet resultSet = statement.executeQuery("select * from patient");

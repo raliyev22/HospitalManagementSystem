@@ -165,7 +165,7 @@ public class HomePage extends JFrame implements ActionListener,MouseListener{
 		// TODO Auto-generated method stub
 		if(e.getSource()==appointment) {
 			dispose();
-			Appointment window = new Appointment();
+			PendingAppointments window = new PendingAppointments(patient);
 			window.setVisible(true);
 		}
 	}

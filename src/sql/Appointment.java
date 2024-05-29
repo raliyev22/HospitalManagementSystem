@@ -44,6 +44,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import objects.DatabaseConnection;
 import objects.Doctor;
 import objects.Patient;
 
@@ -86,13 +87,15 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	
 	JComboBox<String> detailBox;
 	
+	private Patient patient;
+	
 
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Appointment frame = new Appointment();
+					Appointment frame = new Appointment(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -102,14 +105,14 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 	}
 	
 	
-	public Appointment() {
+	public Appointment(Patient patient) {
 //		path = new ArrayList<String>();
 //		path.add("d1.jpg");
 //		path.add("d2.jpg");
 //		path.add("d3.jpg");
 //		path.add("d4.jpg");
 //		path.add("d5.jpg");
-		
+		this.patient = patient;
 		fullList = new ArrayList<Doctor>();
 		doctorLabels = new ArrayList<JLabel>();
 		search =new ArrayList<Doctor>();
@@ -189,6 +192,7 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
         gbc.gridx++;
         gbc.insets = new Insets(5, 20, 5, 85);
         selectName = new JTextField(10);
+        selectName.setFont(new Font("Arial", Font.PLAIN, 16));
         bottomPanel.add(selectName, gbc);
 
         gbc.gridx ++;
@@ -286,7 +290,7 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 			else {
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");
-		    	    Connection connection = DriverManager.getConnection(url,"root","yourpassword");
+		    	    Connection connection = DatabaseConnection.getConnection();
 		    	    
 		    	    String sql;
 		    	    PreparedStatement statement;
@@ -321,8 +325,6 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		    	            //System.out.println("selected");
 		    	        } while (resultSet.next());
 		    	    }
-		    	    
-		    	    //for(Doctor doc: search) {System.out.println(doc.getName());}
 		    	    
 		    	    
 		    	    connection.close();
@@ -391,7 +393,7 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		
 		try {
     	    Class.forName("com.mysql.cj.jdbc.Driver");
-    	    Connection connection = DriverManager.getConnection(url,"root","yourpassword");
+    	    Connection connection = DatabaseConnection.getConnection();
     	    Statement statement = connection.createStatement();
     	    
     	    ResultSet resultSet = statement.executeQuery("select * from doctor");
@@ -481,7 +483,7 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
     	
     	try {
     	    Class.forName("com.mysql.cj.jdbc.Driver");
-    	    Connection connection = DriverManager.getConnection(url,"root","yourpassword");
+    	    Connection connection = DatabaseConnection.getConnection();
     	    Statement statement = connection.createStatement();
     	    
     	    
@@ -505,7 +507,7 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 			ArrayList<String> procedure = new ArrayList<String>();
 			
     	    Class.forName("com.mysql.cj.jdbc.Driver");
-    	    Connection connection = DriverManager.getConnection(url,"root","yourpassword");
+    	    Connection connection = DatabaseConnection.getConnection();
     	    String sql;
     	    PreparedStatement statement;
     	    
@@ -556,7 +558,6 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		bottom.removeAll();
 		bottom.setLayout(new GridLayout(doctorList.size(),1,20,20));
 		initialize(doctorList.size());
-//		HashMap<JLabel,Doctor> searchMap = new HashMap<JLabel,Doctor>();
 		panelMap.clear();
 		
 		for(int i = 0;i<doctorList.size();i++) {
@@ -564,6 +565,9 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 			
 		}
 		displayInfo();
+		
+		bottom.revalidate();
+		bottom.repaint();
 		
 		
 	}

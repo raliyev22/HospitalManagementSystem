@@ -5,6 +5,7 @@ import javax.swing.border.EmptyBorder;
 
 import java.sql.Statement;
 
+import objects.DatabaseConnection;
 import objects.Doctor;
 
 import java.awt.*;
@@ -194,7 +195,7 @@ public class SignUpPage extends JFrame implements ActionListener{
     	
     	try {
     	    Class.forName("com.mysql.cj.jdbc.Driver");
-    	    Connection connection = DriverManager.getConnection(url,"root","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");
+    	    Connection connection = DatabaseConnection.getConnection();
     	    Statement statement = connection.createStatement();
     	    
     	    //ResultSet resultSet = statement.executeQuery("select * from doctor");
@@ -223,7 +224,7 @@ public class SignUpPage extends JFrame implements ActionListener{
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(url, username, "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");
+            Connection connection = DatabaseConnection.getConnection();
 
             String sql = "INSERT INTO patient (id,gender,p_name,age,surname,password,email) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(sql);
