@@ -17,6 +17,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -277,7 +279,20 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		// TODO Auto-generated method stub
 		for (Doctor doc : panelMap.values()) {
 			if(e.getSource()==doc.getButton()) {
-				System.out.println(doc.getId());
+				CreateAppointment appointment =new CreateAppointment(getNumberOfAppoitments()+1,doc.getId(),patient.getId(),true);
+            	appointment.setVisible(true);
+            	
+//            	appointment.addWindowListener(new WindowAdapter() {
+//                    @Override
+//                    public void windowClosed(WindowEvent e) {
+//                        if (appointment.isUpdated()) {
+//                            populateAppointmentsMap();
+//                            showAppointments(appointmentsMap);
+//                        }
+//                    }
+//                });
+            	break;
+
 			}
 		}
 		
@@ -571,6 +586,29 @@ public class Appointment extends JFrame implements ActionListener,MouseListener{
 		
 		
 	}
+	
+	public Integer getNumberOfAppoitments() {
+    	
+    	try {
+    	    Class.forName("com.mysql.cj.jdbc.Driver");
+    	    Connection connection = DatabaseConnection.getConnection();
+    	    Statement statement = connection.createStatement();
+    	    
+    	    
+    	    ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM appointment");
+            
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+            
+    	    connection.close();
+    	    
+    		}
+    		catch(Exception e) {
+    			System.out.println(e);
+    		}
+		return null;
+    }
 
 }
 

@@ -13,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -52,13 +54,9 @@ public class PendingAppointments extends JFrame implements ActionListener {
     private JButton create;
     private JTextField tField;
     private JPanel mainPanel;
-    private String[] hourList = {
-    	    "9:00", "9:35", "10:10", "10:45", "11:20", "11:55",
-    	    "12:30", "13:05", "13:40", "14:15", "14:50", "15:25",
-    	    "16:00", "16:35"
-    	};
     
-    private JButton confirm;
+    
+    
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
@@ -150,11 +148,8 @@ public class PendingAppointments extends JFrame implements ActionListener {
         showAppointments(appointmentsMap);
     }
 
-    private void populateAppointmentsMap() {
+    protected void populateAppointmentsMap() {
     	appointmentsMap.clear();
-        String url = "jdbc:mysql://localhost:3306/hospital";
-        String user = "root";
-        String password = "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";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -199,7 +194,7 @@ public class PendingAppointments extends JFrame implements ActionListener {
         }
     }
 
-    private void showAppointments(Map<Integer, List<Object>> viewMap) {
+    protected void showAppointments(Map<Integer, List<Object>> viewMap) {
         mainPanel.removeAll(); // Clear the main panel before adding new components
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -276,130 +271,124 @@ public class PendingAppointments extends JFrame implements ActionListener {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Handle the update action here
-                	JFrame updateFrame = new JFrame();
-                	updateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                	updateFrame.setSize(400, 350);
-                	updateFrame.setLayout(new GridBagLayout());
-                	GridBagConstraints margins = new GridBagConstraints();
-                	margins.insets=new Insets(0, 0, 35, 5);
-                	margins.gridx=0;
-                	margins.gridy=0;
-                	JLabel newDate = new JLabel("Select a Date");
-                	newDate.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
-                	updateFrame.add(newDate,margins);
+//                	JFrame updateFrame = new JFrame();
+//                	updateFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//                	updateFrame.setSize(400, 350);
+//                	updateFrame.setLayout(new GridBagLayout());
+//                	GridBagConstraints margins = new GridBagConstraints();
+//                	margins.insets=new Insets(0, 0, 35, 5);
+//                	margins.gridx=0;
+//                	margins.gridy=0;
+//                	JLabel newDate = new JLabel("Select a Date");
+//                	newDate.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
+//                	updateFrame.add(newDate,margins);
+//                	
+//                	margins.insets=new Insets(0, 5, 35, 0);
+//                	margins.gridx++;
+//                	JTextField dateField = new JTextField(10);
+//                	dateField.setFont(new Font("Arial", Font.PLAIN, 16));
+//                	updateFrame.add(dateField,margins);
+//                	
+//                	
+//                	margins.insets=new Insets(0, 0, 0, 0);
+//                	margins.gridx=0;
+//                	margins.gridy=1;
+//                	JLabel hour = new JLabel("Select the hour");
+//                	hour.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
+//                	updateFrame.add(hour,margins);
+//                	
+//                	JComboBox<String> hourBox = new JComboBox<String>(hourList);
+//                	hourBox.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
+//                	margins.insets=new Insets(0, 5, 0, 0);
+//                	margins.gridx=1;
+//                	margins.gridy=1;
+//                	updateFrame.add(hourBox,margins);
+//                	
+//                	
+//                	
+//                	
+//                	margins.insets=new Insets(20, 0, 0, 120);
+//                	margins.gridx=1;
+//                	margins.gridy=2;
+//                	confirm = new JButton("Confirm");
+//                	confirm.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
+//                    confirm.setBackground(Color.white);
+//                    confirm.setForeground(Color.decode("#00008B"));
+//                    confirm.setFocusPainted(false);
+//                    updateFrame.add(confirm,margins);
+//                    
+//                    
+//                    
+//                    
+//                    confirm.addActionListener(new ActionListener() {
+//                        @Override
+//                        public void actionPerformed(ActionEvent e) {
+//                            // Get the selected item from the JComboBox
+//                        	if(dateField.getText().isEmpty()) {updateFrame.dispose();}
+//                        	
+//                        	else {
+//	                    	    Timestamp time = createTimestamp(dateField.getText(),(String)hourBox.getSelectedItem());
+//	                    	    
+//	                    	    if(time==null) {JOptionPane.showMessageDialog(updateFrame, "Please enter a valid date.", "Error", JOptionPane.ERROR_MESSAGE);}
+//	                    	    
+//	                    	    else {
+//	                    	    	
+//	                    	    	try {
+//	                    	    		String url = "jdbc:mysql://localhost:3306/hospital";
+//		                    	    	Class.forName("com.mysql.cj.jdbc.Driver");
+//		                        	    Connection connection = DatabaseConnection.getConnection();
+//		                        	    
+//		                        	    
+//		                        	    String sql = "update appointment set appointment_date = ? where id = ?";
+//		                        	    
+//		                        	    
+//		                        	    PreparedStatement statement = connection.prepareStatement(sql);
+//		                        	    statement.setTimestamp(1, time);
+//		                        	    statement.setInt(2, id);
+//		                        	    
+//		                        	    int rows = statement.executeUpdate();
+//		                        	    updateFrame.dispose();
+//		                        	    populateAppointmentsMap();
+//		                                showAppointments(appointmentsMap);
+//		                    	    	connection.close();
+//	                    	    	
+//	                    	    	}
+//	                    	    	catch (SQLIntegrityConstraintViolationException ex) {
+//	                                    JOptionPane.showMessageDialog(updateFrame, "This appointment time is already taken.", "Error", JOptionPane.ERROR_MESSAGE);
+//	                                    
+//	                    	    	}
+//	                    	    	
+//	                    	    	catch(Exception error) {
+//	                    	    		
+//	                        			System.out.println(error);
+//	                        		}
+//	                    	    	
+//	                    	    }
+//	                    	    
+//                        } 
+//                        		}
+//                        		
+//                        }
+//                    );              	
+//                	updateFrame.setVisible(true);
+                	CreateAppointment appointment =new CreateAppointment(id,(Integer)appointmentInfo.get(2),(Integer)appointmentInfo.get(0),false);
+                	appointment.setVisible(true);
                 	
-                	margins.insets=new Insets(0, 5, 35, 0);
-                	margins.gridx++;
-                	JTextField dateField = new JTextField(10);
-                	dateField.setFont(new Font("Arial", Font.PLAIN, 16));
-                	updateFrame.add(dateField,margins);
-                	
-                	
-                	margins.insets=new Insets(0, 0, 0, 0);
-                	margins.gridx=0;
-                	margins.gridy=1;
-                	JLabel hour = new JLabel("Select the hour");
-                	hour.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
-                	updateFrame.add(hour,margins);
-                	
-                	JComboBox<String> hourBox = new JComboBox<String>(hourList);
-                	hourBox.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
-                	margins.insets=new Insets(0, 5, 0, 0);
-                	margins.gridx=1;
-                	margins.gridy=1;
-                	updateFrame.add(hourBox,margins);
-                	
-                	
-                	
-                	
-                	margins.insets=new Insets(20, 0, 0, 120);
-                	margins.gridx=1;
-                	margins.gridy=2;
-                	confirm = new JButton("Confirm");
-                	confirm.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
-                    confirm.setBackground(Color.white);
-                    confirm.setForeground(Color.decode("#00008B"));
-                    confirm.setFocusPainted(false);
-                    updateFrame.add(confirm,margins);
-                    
-                    
-                    
-                    
-                    confirm.addActionListener(new ActionListener() {
+                	appointment.addWindowListener(new WindowAdapter() {
                         @Override
-                        public void actionPerformed(ActionEvent e) {
-                            // Get the selected item from the JComboBox
-                        	if(dateField.getText().isEmpty()) {updateFrame.dispose();}
-                        	
-                        	else {
-	                    	    Timestamp time = createTimestamp(dateField.getText(),(String)hourBox.getSelectedItem());
-	                    	    
-	                    	    if(time==null) {JOptionPane.showMessageDialog(updateFrame, "Please enter a valid date.", "Error", JOptionPane.ERROR_MESSAGE);}
-	                    	    
-	                    	    else {
-	                    	    	
-	                    	    	try {
-	                    	    		String url = "jdbc:mysql://localhost:3306/hospital";
-		                    	    	Class.forName("com.mysql.cj.jdbc.Driver");
-		                        	    Connection connection = DatabaseConnection.getConnection();
-		                        	    
-		                        	    
-		                        	    String sql = "update appointment set appointment_date = ? where id = ?";
-		                        	    
-		                        	    
-		                        	    PreparedStatement statement = connection.prepareStatement(sql);
-		                        	    statement.setTimestamp(1, time);
-		                        	    statement.setInt(2, id);
-		                        	    
-		                        	    int rows = statement.executeUpdate();
-		                        	    updateFrame.dispose();
-		                        	    populateAppointmentsMap();
-		                                showAppointments(appointmentsMap);
-		                    	    	connection.close();
-	                    	    	
-	                    	    	}
-	                    	    	catch (SQLIntegrityConstraintViolationException ex) {
-	                                    JOptionPane.showMessageDialog(updateFrame, "This appointment time is already taken.", "Error", JOptionPane.ERROR_MESSAGE);
-	                                    
-	                    	    	}
-	                    	    	
-	                    	    	catch(Exception error) {
-	                    	    		
-	                        			System.out.println(error);
-	                        		}
-	                    	    	
-	                    	    }
-	                    	    
+                        public void windowClosed(WindowEvent e) {
+                            if (appointment.isUpdated()) {
+                                populateAppointmentsMap();
+                                showAppointments(appointmentsMap);
+                            }
                         }
-
-                        	    
-                        	    
-                        		}
-                        		
-                        }
-                    );
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                	
-                	updateFrame.setVisible(true);
-                	
-                	
-                	
-                	
-                	
+                    });
                 }
             });
 
             cancelButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Handle the cancel action here
-                	String url = "jdbc:mysql://localhost:3306/hospital";
                 	try {
                 	    Class.forName("com.mysql.cj.jdbc.Driver");
                 	    Connection connection = DatabaseConnection.getConnection();
@@ -480,6 +469,7 @@ public class PendingAppointments extends JFrame implements ActionListener {
                 }
             });
         }
+        System.out.println("dkmf");
 
         mainPanel.revalidate();
         mainPanel.repaint();
@@ -516,32 +506,6 @@ public class PendingAppointments extends JFrame implements ActionListener {
         
     }
     
-    private Timestamp createTimestamp(String date,String hour) {
-    	if(isValidDateFormat(date)) {
-	    	Timestamp newAppointmentDate = Timestamp.valueOf(modifyDate(date)+hour+":00");
-	    	return newAppointmentDate;
-	    	
-    	}
-    	return null;
-    }
-    
-    private String modifyDate(String date) {
-    	String[] component = date.split("/");
-    	return component[2]+'-'+component[1]+'-'+component[0]+" ";
-    	
-    }
-    
-    
-    private boolean isValidDateFormat(String date) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            sdf.setLenient(false);
-            sdf.parse(date);
-            return true;
-        } catch (ParseException e) {
-            return false;
-        }
-    }
-    
+ 
 
 }
