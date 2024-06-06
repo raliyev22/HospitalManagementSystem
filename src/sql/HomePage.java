@@ -178,6 +178,9 @@ public class HomePage extends JFrame implements ActionListener,MouseListener{
 		else if(e.getSource()==records) {
 			dispose();
 			MyAppointments window = new MyAppointments(patient);
+			
+			//PastOperations window = new PastOperations(patient);
+			
 			//window.setVisible(true);
 		}
 		

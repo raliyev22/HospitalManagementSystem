@@ -22,6 +22,7 @@ public class MyAppointments extends JFrame {
     private static Map<Integer, List<Object>> appointmentsMap = new HashMap<>();
     private int patientID;
     private Patient patient;
+    private JFrame inputFrame;
 
     public MyAppointments(Patient patient) {
         this.patientID = patient.getId();
@@ -82,7 +83,7 @@ public class MyAppointments extends JFrame {
     }
 
     private void createInputFrame(JFrame mainFrame) {
-        JFrame inputFrame = new JFrame("Filter Appointments");
+        inputFrame = new JFrame("Filter Appointments");
         inputFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         inputFrame.setSize(400, 350);
 
@@ -125,6 +126,14 @@ public class MyAppointments extends JFrame {
 
         inputFrame.add(inputPanel);
         JMenuClass menuItem = new JMenuClass(this, patient);
+        JMenuItem operation = new JMenuItem("Operations");
+        operation.addActionListener(e -> goToOperations());
+        menuItem.add(operation);
+        
+        JMenuItem test = new JMenuItem("Test Results");
+        test.addActionListener(e -> goToTest());
+        menuItem.add(test);
+        
         inputFrame.setJMenuBar(menuItem.getMenuBar());
         inputFrame.setVisible(true);
         mainFrame.setVisible(false);
@@ -160,6 +169,7 @@ public class MyAppointments extends JFrame {
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // Panel for back button
         JButton backButton = new JButton("Filter Options");
+        backButton.setFocusPainted(false);
         topPanel.add(backButton);
         frame.add(topPanel, BorderLayout.NORTH);
 
@@ -276,5 +286,15 @@ public class MyAppointments extends JFrame {
         frame.add(scrollPane, BorderLayout.CENTER);
         frame.setVisible(true);
         mainFrame.setVisible(false);
+    }
+    
+    public void goToOperations() {
+    	new PastOperations(patient).setVisible(true);
+    	inputFrame.dispose();	
+    }
+    
+    public void goToTest() {
+    	new TestResults(patient).setVisible(true);
+    	inputFrame.dispose();
     }
 }

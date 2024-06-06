@@ -1,26 +1,11 @@
 package sql;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import objects.DatabaseConnection;
-import objects.JMenuClass;
-import objects.Patient;
-import objects.Test;
-import objects.TestTableModel;
-
-import javax.swing.BoxLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,23 +15,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
-import javax.swing.Box;
-import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
 
+import objects.DatabaseConnection;
+import objects.JMenuClass;
+import objects.Operation;
+import objects.OperationTableModel;
+import objects.Patient;
 
-
-public class TestResults extends JFrame {
-
-    private static final long serialVersionUID = 1L;
+public class PastOperations extends JFrame{
+	
+	private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTable resultsTable;
     private int patientID;
@@ -56,7 +44,7 @@ public class TestResults extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    TestResults frame = new TestResults(null);
+                    PastOperations frame = new PastOperations(new Patient(1, "male", "Azad", 22, "ASLANLI", "dummy", "aaslanli21"));
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -65,12 +53,11 @@ public class TestResults extends JFrame {
         });
     }
 
-    /**
-     * Create the frame.
-     */
-    public TestResults(Patient patient) {
-    	this.patient = patient;
-        this.patientID = patient.getId();
+	public PastOperations(Patient  p) {
+		this.patient=p;
+		int id = p.getId();
+		
+		this.patientID = p.getId();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 800, 400);
         contentPane = new JPanel();
@@ -86,31 +73,32 @@ public class TestResults extends JFrame {
 
         JPanel headerLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerLabelPanel.setBackground(Color.decode("#00008B"));
-        JLabel headerLabel = new JLabel("Test Results");
+        JLabel headerLabel = new JLabel("Past Operations");
         headerLabel.setFont(new Font("Objektiv Mk1", Font.BOLD, 20));
         headerLabel.setForeground(Color.white);
         headerLabelPanel.add(headerLabel);
         headerPanel.add(headerLabelPanel);
 
-        headerPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Adding whitespace between Test Results and Patient name
+        headerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         JPanel patientNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         patientNamePanel.setBackground(Color.decode("#00008B"));
-        JLabel patientNameLabel = new JLabel(patient.getName() + " " + patient.getSurname());
+        JLabel patientNameLabel = new JLabel(p.getName() + " " + p.getSurname());
         patientNameLabel.setFont(new Font("Objektiv Mk1", Font.BOLD, 15));
         patientNameLabel.setForeground(Color.white);
         patientNamePanel.add(patientNameLabel);
         headerPanel.add(patientNamePanel);
-
+        
+        
         JPanel infoPanel = new JPanel();
         contentPane.add(infoPanel, BorderLayout.WEST);
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
         JScrollPane resultsPane = new JScrollPane();
         contentPane.add(resultsPane, BorderLayout.CENTER);
-
-        List<Test> testList = fetchResults();
-        TestTableModel model = new TestTableModel(testList);
+        
+        List<Operation> op_List = getOperations();
+        OperationTableModel model = new OperationTableModel(op_List);
         resultsTable = new JTable(model);
         resultsPane.setViewportView(resultsTable);
 
@@ -126,7 +114,7 @@ public class TestResults extends JFrame {
         avgBillingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Average Billings"));
         billingPanel.add(avgBillingPanel);
 
-        Map<String, Float> avgBillingMap = fetchAvgBillings();
+        Map<String, Float> avgBillingMap = billingToDoctor();
         for (Map.Entry<String, Float> entry : avgBillingMap.entrySet()) {
             JLabel label = new JLabel("   " + entry.getKey() + ": " + entry.getValue() + "   ");
             avgBillingPanel.add(label);
@@ -142,7 +130,7 @@ public class TestResults extends JFrame {
         totalBillingPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Total Billings"));
         billingPanel.add(totalBillingPanel);
 
-        float totalBilling = fetchTotalBillings();
+        float totalBilling = getBill();
         JLabel totalBillingLabel = new JLabel("   Total: " + totalBilling + "   ");
         totalBillingPanel.add(totalBillingLabel);
 
@@ -153,70 +141,75 @@ public class TestResults extends JFrame {
 //        JButton closeButton = new JButton("Done");
 //        closeButton.addActionListener(e -> dispose());
 //        actionsPanel.add(closeButton, BorderLayout.EAST);
-        JMenuClass menuItem = new JMenuClass(this,patient);
-        
-        JMenuItem operation = new JMenuItem("Operations");
-        operation.addActionListener(e -> goToOperations());
-        menuItem.add(operation);
+        JMenuClass menuItem = new JMenuClass(this,p);
         
         JMenuItem appointment = new JMenuItem("Appointments");
         appointment.addActionListener(e -> goToAppointment());
         menuItem.add(appointment);
         
+        JMenuItem test = new JMenuItem("Test Results");
+        test.addActionListener(e -> goToTest());
+        menuItem.add(test);
+        
         setJMenuBar(menuItem.getMenuBar());
-    }
-
-    private List<Test> fetchResults() {
-        List<Test> tests = new ArrayList<>();
-        String resultsQuery = "SELECT *\n"
-                            + "FROM test\n"
-                            + "WHERE p_id = ?;";
+	}
+	
+	private List<Operation> getOperations() {
+        List<Operation> ops = new ArrayList<>();
+        String query = "SELECT operation.id, d_id, p_id, description, billing, d_name, surname\n"
+        				+ "FROM operation INNER JOIN doctor ON doctor.id = operation.d_id\n"
+        				+ "WHERE p_id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement resultsStatement = connection.prepareStatement(resultsQuery)) {
+             PreparedStatement ops_Stat = connection.prepareStatement(query)) {
 
-            resultsStatement.setInt(1, this.patientID);
-            ResultSet resultSet = resultsStatement.executeQuery();
+            ops_Stat.setInt(1, this.patientID);
+            ResultSet ops_Set = ops_Stat.executeQuery();
 
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                int patientID = resultSet.getInt("p_id");
-                int appointmentID = resultSet.getInt("app_id");
-                String description = resultSet.getString("description");
-                double billing = resultSet.getDouble("billing");
-                tests.add(new Test(id, patientID, appointmentID, description, billing));
+            while (ops_Set.next()) {
+                int id = ops_Set.getInt("id");
+                int patientID = ops_Set.getInt("p_id");
+                int doctorID = ops_Set.getInt("d_id");
+                String description = ops_Set.getString("description");
+                double billing = ops_Set.getDouble("billing");
+                String doctorName = ops_Set.getString("d_name");
+                String doctorSName = ops_Set.getString("surname");
+                
+                ops.add(new Operation(id, patientID, doctorID, description, billing, doctorName, doctorSName));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return tests;
+        return ops;
     }
-
-    private Map<String, Float> fetchAvgBillings() {
-        Map<String, Float> avgBillingMap = new HashMap<>();
-        String avgBillingQuery = "SELECT description, AVG(billing) as average_billing FROM test WHERE p_id = ? GROUP BY description HAVING AVG(billing) > 0;";
+	
+	private Map<String, Float> billingToDoctor() {
+        Map<String, Float> bill_map = new HashMap<>();
+        String query = "SELECT d_name, surname, AVG(billing) as av_billing\n"
+        				+ "FROM operation INNER JOIN doctor ON doctor.id = operation.d_id\n"
+        				+ "WHERE p_id = ? GROUP BY d_id HAVING AVG(billing) > 0;";
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement avgBillingStatement = connection.prepareStatement(avgBillingQuery)) {
+             PreparedStatement bill_Stat = connection.prepareStatement(query)) {
 
-            avgBillingStatement.setInt(1, this.patientID);
-            ResultSet resultSet = avgBillingStatement.executeQuery();
+            bill_Stat.setInt(1, this.patientID);
+            ResultSet resultSet = bill_Stat.executeQuery();
 
             while (resultSet.next()) {
-                String testType = resultSet.getString("description");
-                float averageBilling = resultSet.getFloat("average_billing");
-                avgBillingMap.put(testType, averageBilling);
+                String doc_id = resultSet.getString("d_name") + " " + resultSet.getString("surname"); 
+                float averageBilling = resultSet.getFloat("av_billing");
+                bill_map.put(doc_id, averageBilling);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return avgBillingMap;
+        return bill_map;
     }
-
-    private float fetchTotalBillings() {
+	
+	private float getBill() {
         float totalBilling = 0;
-        String totalBillingQuery = "SELECT SUM(billing) as total_billing FROM test WHERE p_id = ?;";
+        String totalBillingQuery = "SELECT SUM(billing) as total_billing FROM operation WHERE p_id = ?;";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement totalBillingStatement = connection.prepareStatement(totalBillingQuery)) {
@@ -231,14 +224,15 @@ public class TestResults extends JFrame {
         }
         return totalBilling;
     }
-    
-    public void goToOperations() {
-    	new PastOperations(patient).setVisible(true);
-    	this.dispose();	
-    }
-    
-    public void goToAppointment() {
+	
+	public void goToAppointment() {
     	new MyAppointments(patient);
     	this.dispose();	
     }
+	
+	public void goToTest() {
+    	new TestResults(patient).setVisible(true);
+    	this.dispose();	
+    }
+
 }
