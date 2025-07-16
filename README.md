@@ -27,6 +27,3 @@ A desktop-based hospital management system developed using **Java (Swing)** and 
 - **JDBC:** Used for database connectivity
 
 ---
-
-## 📁 Project Structure
-
